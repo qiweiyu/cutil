@@ -34,6 +34,19 @@ void *qCalloc(size_t n, size_t size) {
 	return returnPtr;
 }
 
+void *qRealloc(void *ptr, size_t size) {
+	void *realPtr = ptr-PREFIX_SIZE;
+	int oldSize = *(size_t *)realPtr;
+	realPtr = realloc(realPtr, size+PREFIX_SIZE);
+	if(realPtr == NULL) {
+		outOfMemory(size);
+	}
+	ptr = realPtr+PREFIX_SIZE;
+	*(size_t*)realPtr = size;
+	usedMemory += size-oldSize;
+	return ptr;
+}
+
 void qFree(void *ptr) {
 	void *realPtr = ptr-PREFIX_SIZE;
 	int size = *(size_t *)realPtr;

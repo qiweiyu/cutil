@@ -5,8 +5,14 @@
 #include "qStack.h"
 
 int main() {
-	qStack *stack = qCreateStack(qFree);
+	void *p = qMalloc(10);
 	printf("Memory Used %llu \n", qGetUsedMemory());
+	p = qRealloc(p, 20);
+	printf("Memory Used %llu \n", qGetUsedMemory());
+	qFree(p);
+	printf("Memory Used %llu \n", qGetUsedMemory());
+	return 0;
+	qStack *stack = qCreateStack(qFree);
 	char *c;
 	for(int i = 0; i< 10; i++) {
 		c = qCalloc(8, sizeof(char));
