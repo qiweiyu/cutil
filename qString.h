@@ -1,7 +1,17 @@
-#include "qMalloc.h"
+#ifndef _Q_STRING_H
+#define _Q_STRING_H
 
-typedef qString char;
+#include "qMalloc.h"
+#include "qLinkList.h"
+
+typedef char qString;
+
+char *strCpyByLimit(char *dst, char *src, size_t limit);
 
 qString *qCreateString(char *src);
-qString *qStringCat(qString *dst, char *src);
 void qFreeString(qString *str);
+
+qString *qCatString(qString *dst, char *src);
+qLinkList *qExplodeString(qString *string, char *delimiter);
+
+#endif

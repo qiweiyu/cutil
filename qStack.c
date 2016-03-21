@@ -19,6 +19,9 @@ void *qStackPop(qStack *stack) {
 	if(node->prev) {
 		node->prev->next = NULL;
 	}
+	else {
+		stack->list->head = NULL;
+	}
 	void *val = node->value;
 	qFree(node);
 	return val;

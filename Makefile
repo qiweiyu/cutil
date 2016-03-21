@@ -1,10 +1,12 @@
-CC = gcc
+CC = gcc -g
 
-test : qStack.o qLinkList.o qMalloc.o
+default : test clean
 
-qStack.o : qLinkList.o
+test : qStack.o qLinkList.o qMalloc.o qString.o
 
-qLinkList.o : qMalloc.o
+%.o : qMalloc.o %.c
+
+qMalloc.o : qMalloc.c
 
 .PHONY : clean
 
