@@ -1,5 +1,5 @@
-#ifndef __Q_LINK_LIST_H
-#define __Q_LINK_LIST_H
+#ifndef _Q_LINK_LIST_H
+#define _Q_LINK_LIST_H
 
 #include "qMalloc.h"
 

@@ -1,5 +1,5 @@
-#ifndef __Q_MALLOC_H
-#define __Q_MALLOC_H
+#ifndef _Q_MALLOC_H
+#define _Q_MALLOC_H
 
 #include <stddef.h>
 
