@@ -2,8 +2,16 @@
 #define _Q_DICT_H
 #include "qString.h"
 
+typedef struct qDictKey {
+	union key {
+		qString *strKey;
+		size_t intKey;
+	} key;
+	char useStr;
+} qDictKey;
+
 typedef struct qDictNode {
-	qString *key;	
+	qDictKey *key;	
 	void *value;
 	struct qDictNode *next;
 } qDictNode;
@@ -11,16 +19,18 @@ typedef struct qDictNode {
 typedef struct qDict {
 	size_t nodeCount;
 	size_t bucketCount;
-	size_t (*hash)(char *key);
 	qDictNode **bucket;
 } qDict;
 
-qDict *qCreateDict(size_t (*hash)(char *key));
+qDict *qCreateDict();
 void qFreeDict(qDict *dict);
 
-int qAddValueToDict(qDict *dict, char *key, void *value);
-int qRmValueFromDict(qDict *dict, char *key);
+int qAddValueToDictByStrKey(qDict *dict, char *key, void *value);
+int qAddValueToDictByIntKey(qDict *dict, size_t key, void *value);
+int qRmValueFromDictByStrKey(qDict *dict, char *key);
+int qRmValueFromDictByIntKey(qDict *dict, size_t key);
 
-void *qFindValueFromDict(qDict *dict, char *key);
+void *qFindValueFromDictByStrKey(qDict *dict, char *key);
+void *qFindValueFromDictByIntKey(qDict *dict, size_t key);
 
 #endif
