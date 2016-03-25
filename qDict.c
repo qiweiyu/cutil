@@ -48,12 +48,13 @@ static int qDictKeyCmp(qDictKey *keyA, qDictKey *keyB) {
 	}
 }
 
-qDict *qCreateDict() {
+qDict *qCreateDict(void (*freeValue)(void *value)) {
 	size_t bucketCount = MIN_BUCKET_COUNT;
 	qDict *dict = qMalloc(sizeof(qDict));
 	dict->nodeCount = 0;
 	dict->bucketCount = bucketCount;
 	dict->bucket = qCalloc(bucketCount, sizeof(qDictNode*));
+	dict->freeValue = freeValue;
 	return dict;
 }
 
@@ -64,6 +65,9 @@ void qFreeDict(qDict *dict) {
 		while(node) {
 			bucket = node->next;
 			qFreeDictKey(node->key);
+			if(dict->freeValue) {
+				dict->freeValue(node->value);
+			}
 			qFree(node);
 			node = bucket;	
 		}
@@ -119,6 +123,10 @@ static int qAddValueToDict(qDict *dict, qDictKey *key, void *value) {
 	qDictNode *last = *(dict->bucket+hash);
 	while(node) {
 		if(qDictKeyCmp(node->key, key) == 0) {
+			qFreeDictKey(key);
+			if(dict->freeValue) {
+				dict->freeValue(value);
+			}
 			return -1;
 		}
 		last = node;
@@ -167,6 +175,9 @@ static int qRmValueFromDict(qDict *dict, qDictKey *key) {
 			}
 			qFreeDictKey(node->key);
 			qFreeDictKey(key);
+			if(dict->freeValue) {
+				dict->freeValue(node->value);
+			}
 			qFree(node);
 			dict->nodeCount--;
 			qRehash(dict);

@@ -12,7 +12,7 @@ char *strCpyByLimit(char *dst, char *src, size_t limit) {
 }
 
 qString *qCreateString(char *src) {
-	size_t len = strlen(src);
+	size_t len = strlen(src)+1;
 	qString *ptr = qMalloc(len);
 	strcpy(ptr, src);
 	return ptr;
@@ -25,14 +25,14 @@ void qFreeString(qString *str) {
 qString *qCatString(qString *dst, char *src) {
 	size_t srcLen = strlen(src);
 	size_t dstLen = strlen(dst);
-	dst = qRealloc(dst, dstLen+srcLen);
+	dst = qRealloc(dst, dstLen+srcLen+1);
 	dst = strcat(dst, src);
 	return dst;
 }
 
 qLinkList *qExplodeString(qString *string, char *delimiter) {
 	size_t maxLen = strlen(string), delimiterLen = strlen(delimiter), len;
-	char *buff = qMalloc(maxLen);
+	char *buff = qMalloc(maxLen+1);
 	char *pos = string, *newPos;
 	qLinkList *list = qCreateLinkList((void (*)(void *))qFreeString, (int (*)(void *, void *))strcmp);
 	do {

@@ -20,9 +20,10 @@ typedef struct qDict {
 	size_t nodeCount;
 	size_t bucketCount;
 	qDictNode **bucket;
+	void (*freeValue)(void *value);
 } qDict;
 
-qDict *qCreateDict();
+qDict *qCreateDict(void (*freeValue)(void *value));
 void qFreeDict(qDict *dict);
 
 int qAddValueToDictByStrKey(qDict *dict, char *key, void *value);

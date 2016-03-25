@@ -12,31 +12,32 @@ static void outOfMemory(size_t size) {
 }
 
 void *qMalloc(size_t size) {
-	void *ptr = malloc(size+PREFIX_SIZE);
-	if(ptr == NULL) {
+	char *ptr = malloc(size+PREFIX_SIZE);
+	if (ptr == NULL) {
 		outOfMemory(size);
 	}
-	void *returnPtr = ptr+PREFIX_SIZE;
+	char *returnPtr = ptr+PREFIX_SIZE;
 	*(size_t *)ptr = size;
 	usedMemory += size+PREFIX_SIZE;
-	return returnPtr;
+	return (void *)returnPtr;
 }
 
 void *qCalloc(size_t n, size_t size) {
 	size = n*size;
-	void *ptr = calloc(1, size+PREFIX_SIZE);
-	if(ptr == NULL) {
+	char *ptr = calloc(1, size+PREFIX_SIZE);
+	if (ptr == NULL) {
 		outOfMemory(size);
 	}
-	void *returnPtr = ptr+PREFIX_SIZE;
+	char *returnPtr = ptr+PREFIX_SIZE;
 	*(size_t *)ptr = size;
 	usedMemory += size+PREFIX_SIZE;
-	return returnPtr;
+	return (void*)returnPtr;
 }
 
 void *qRealloc(void *ptr, size_t size) {
-	void *realPtr = ptr-PREFIX_SIZE;
-	int oldSize = *(size_t *)realPtr;
+	ptr = (char*)ptr;
+	char *realPtr = ptr-PREFIX_SIZE;
+	size_t oldSize = *(size_t *)realPtr;
 	realPtr = realloc(realPtr, size+PREFIX_SIZE);
 	if(realPtr == NULL) {
 		outOfMemory(size);
@@ -44,12 +45,13 @@ void *qRealloc(void *ptr, size_t size) {
 	ptr = realPtr+PREFIX_SIZE;
 	*(size_t*)realPtr = size;
 	usedMemory += size-oldSize;
-	return ptr;
+	return (void*)ptr;
 }
 
 void qFree(void *ptr) {
-	void *realPtr = ptr-PREFIX_SIZE;
-	int size = *(size_t *)realPtr;
+	ptr = (char *)ptr;
+	char *realPtr = ptr-PREFIX_SIZE;
+	size_t size = *(size_t *)realPtr;
 	usedMemory -= (size + PREFIX_SIZE);
 	free(realPtr);
 }

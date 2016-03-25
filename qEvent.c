@@ -8,8 +8,8 @@ qEvent *qCreateEvent() {
 	qEvent *event = qMalloc(sizeof(qEvent));
 	FD_ZERO(&(event->readSet));
 	FD_ZERO(&(event->writeSet));
-	event->fileReadEventDict = qCreateDict(NULL);
-	event->fileWriteEventDict = qCreateDict(NULL);
+	event->fileReadEventDict = qCreateDict((void(*)(void*))qFreeFileEvent);
+	event->fileWriteEventDict = qCreateDict((void (*)(void*))qFreeFileEvent);
 	event->stop = 0;
 	return event;
 }
@@ -45,14 +45,15 @@ static void qRmFileEvent(qEvent *event, int fd, int isRead) {
 	qDict *eventDict;
 	if(isRead) {
 		eventDict = event->fileReadEventDict;
+		FD_CLR(fd, &event->readSet);
 	}
 	else {
 		eventDict = event->fileWriteEventDict;
+		FD_CLR(fd, &event->writeSet);
 	}
 	qFileEvent *fileEvent = qFindValueFromDictByIntKey(eventDict, fd);
 	if(fileEvent) {
 		qRmValueFromDictByIntKey(eventDict, fd);
-		qFreeFileEvent(fileEvent);
 	}
 }
 
@@ -78,16 +79,13 @@ static void qProcessEvent(qEvent *event, int fd, int isRead) {
 	qDict *eventDict;
 	if(isRead) {
 		eventDict = event->fileReadEventDict;
-		FD_CLR(fd, &event->readSet);
 	}
 	else {
 		eventDict = event->fileWriteEventDict;
-		FD_CLR(fd, &event->writeSet);
 	}
 	qFileEvent *fileEvent = qFindValueFromDictByIntKey(eventDict, fd);
 	if(fileEvent) {
 		fileEvent->proc(event, fd, fileEvent->client);
-		qRmFileEvent(event, fd, isRead);
 	}
 }
 
@@ -106,5 +104,6 @@ void qEventLoop(qEvent *event) {
 				}
 			}
 		}
+		printf("Used Memory is %llu \n", qGetUsedMemory());
 	}
 }
